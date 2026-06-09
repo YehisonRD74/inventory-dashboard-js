@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Inventario</title>
+    <style>
+        /* Estilos generales */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f4f6f9;
+            color: #333;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+
+        /* Formulario de entrada */
+        .form-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .form-group input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        /* Tabla de inventario */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            color: #2c3e50;
+        }
+
+        .btn-delete {
+            background-color: #e74c3c;
+            padding: 6px 12px;
+            font-size: 0.9rem;
+        }
+
+        .btn-delete:hover {
+            background-color: #c0392b;
+        }
+
+        .empty-message {
+            text-align: center;
+            padding: 20px;
+            color: #7f8c8d;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Panel de Inventario</h2>
+
+        <form id="inventory-form" class="form-group">
+            <input type="text" id="product-name" placeholder="Nombre del Producto" required>
+            <input type="number" id="product-qty" placeholder="Cantidad" min="1" required>
+            <input type="number" id="product-price" placeholder="Precio Unitario ($)" min="0.01" step="0.01" required>
+            <button type="submit">Agregar Producto</button>
+        </form>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th>Cantidad</th>
+                    <th>Precio Unitario</th>
+                    <th>Valor Total</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="inventory-list">
+                </tbody>
+        </table>
+        <div id="empty-msg" class="empty-message">No hay productos en el inventario.</div>
+    </div>
+
+    <script>
+        // Arreglo para almacenar los datos temporalmente
+        let inventory = [];
+
+        // Referencias a los elementos del DOM (HTML)
+        const form = document.getElementById('inventory-form');
+        const list = document.getElementById('inventory-list');
+        const emptyMsg = document.getElementById('empty-msg');
+
+        // Función para actualizar la tabla en la pantalla
+        function renderTable() {
+            list.innerHTML = ''; // Limpiar la tabla antes de reescribir
+
+            if (inventory.length === 0) {
+                emptyMsg.style.display = 'block';
+            } else {
+                emptyMsg.style.display = 'none';
+                
+                inventory.forEach((item, index) => {
+                    const row = document.createElement('tr');
+                    
+                    // Calculamos el valor total por producto
+                    const totalValue = (item.quantity * item.price).toFixed(2);
+
+                    row.innerHTML = `
+                        <td>${item.name}</td>
+                        <td>${item.quantity}</td>
+                        <td>$${parseFloat(item.price).toFixed(2)}</td>
+                        <td><strong>$${totalValue}</strong></td>
+                        <td>
+                            <button class="btn-delete" onclick="deleteItem(${index})">Eliminar</button>
+                        </td>
+                    `;
+                    list.appendChild(row);
+                });
+            }
+        }
+
+        // Evento que se dispara al enviar el formulario
+        form.addEventListener('submit', function(e) {
+            e.preventDefault(); // Evita que la página se recargue
+
+            // Capturar los valores de los inputs
+            const name = document.getElementById('product-name').value;
+            const quantity = parseInt(document.getElementById('product-qty').value);
+            const price = parseFloat(document.getElementById('product-price').value);
+
+            // Agregar el nuevo objeto al arreglo
+            inventory.push({ name, quantity, price });
+
+            // Limpiar el formulario y actualizar la vista
+            form.reset();
+            renderTable();
+        });
+
+        // Función para eliminar un producto
+        window.deleteItem = function(index) {
+            inventory.splice(index, 1); // Quita 1 elemento en la posición 'index'
+            renderTable();
+        };
+
+        // Renderizado inicial
+        renderTable();
+    </script>
+
+</body>
+</html>
