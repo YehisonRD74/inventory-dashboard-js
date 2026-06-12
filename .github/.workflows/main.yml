@@ -1,0 +1,34 @@
+name: Despliegue Automatico a Surge
+
+# 1. El disparador: Se ejecuta cada vez que haces un push a la rama 'main'
+on:
+  push:
+    branches:
+      - main
+
+# 2. La lista de tareas que va a realizar el servidor de GitHub
+jobs:
+  deploy:
+    runs-on: ubuntu-latest # Usa un servidor virtual con Linux integrado
+
+    steps:
+      # Paso 1: Copiar el código de tu repositorio dentro del servidor virtual
+      - name: Descargar codigo del repositorio
+        uses: actions/checkout@v3
+
+      # Paso 2: Instalar Node.js en el entorno virtual
+      - name: Configurar Node.js en el servidor
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      # Paso 3: Instalar la herramienta Surge de forma global en el servidor virtual
+      - name: Instalar Surge.sh
+        run: npm install -g surge
+
+      # Paso 4: Ejecutar el despliegue usando los Secrets guardados en GitHub
+      - name: Publicar sitio web en Surge
+        # REEMPLAZA 'tu-dominio-personalizado.surge.sh' por el enlace real de tu app
+        run: surge ./ tu-dominio-personalizado.surge.sh --token ${{ secrets.SURGE_TOKEN }}
+        env:
+          SURGE_LOGIN: ${{ secrets.SURGE_LOGIN }}
