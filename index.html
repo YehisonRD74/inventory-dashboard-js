@@ -35,6 +35,35 @@
             padding-bottom: 10px;
         }
 
+        /* --- ESTILOS DE LA NOTIFICACIÓN EMERGENTE --- */
+        .popup-success {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: #2ecc71; /* Verde de éxito */
+            color: white;
+            text-align: center;
+            border-radius: 8px;
+            padding: 16px 24px;
+            position: fixed;
+            z-index: 1000;
+            right: 30px;
+            top: 30px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: opacity 0.5s ease, transform 0.5s ease, visibility 0.5s;
+        }
+
+        /* Clase que se activa con JavaScript para mostrar el popup */
+        .popup-success.show {
+            visibility: visible;
+            opacity: 1;
+            transform: translateY(0);
+        }
+        /* ------------------------------------------- */
+
         /* Formulario de entrada */
         .form-group {
             display: flex;
@@ -104,8 +133,13 @@
 </head>
 <body>
 
+    <div id="success-popup" class="popup-success">
+        🚀 ¡Automatización Exitosa con GitHub Actions!
+    </div>
+
     <div class="container">
         <h2>Panel de Inventario</h2>
+        
         <form id="inventory-form" class="form-group">
             <input type="text" id="product-name" placeholder="Nombre del Producto" required>
             <input type="number" id="product-qty" placeholder="Cantidad" min="1" required>
@@ -130,6 +164,22 @@
     </div>
 
     <script>
+        // --- LÓGICA DEL MENSAJE EMERGENTE ---
+        // Se ejecuta automáticamente cuando la página termina de cargar
+        window.onload = function() {
+            const popup = document.getElementById('success-popup');
+            
+            // Agrega la clase 'show' para que aparezca con la animación
+            popup.classList.add('show');
+            
+            // Lo oculta automáticamente después de 4.5 segundos (4500 milisegundos)
+            setTimeout(function() { 
+                popup.classList.remove('show'); 
+            }, 4500);
+        };
+        // ------------------------------------
+
+
         // Arreglo para almacenar los datos temporalmente
         let inventory = [];
 
@@ -140,7 +190,7 @@
 
         // Función para actualizar la tabla en la pantalla
         function renderTable() {
-            list.innerHTML = ''; // Limpiar la tabla antes de reescribir
+            list.innerHTML = ''; 
 
             if (inventory.length === 0) {
                 emptyMsg.style.display = 'block';
@@ -150,7 +200,6 @@
                 inventory.forEach((item, index) => {
                     const row = document.createElement('tr');
                     
-                    // Calculamos el valor total por producto
                     const totalValue = (item.quantity * item.price).toFixed(2);
 
                     row.innerHTML = `
@@ -167,30 +216,24 @@
             }
         }
 
-        // Evento que se dispara al enviar el formulario
         form.addEventListener('submit', function(e) {
-            e.preventDefault(); // Evita que la página se recargue
+            e.preventDefault(); 
 
-            // Capturar los valores de los inputs
             const name = document.getElementById('product-name').value;
             const quantity = parseInt(document.getElementById('product-qty').value);
             const price = parseFloat(document.getElementById('product-price').value);
 
-            // Agregar el nuevo objeto al arreglo
             inventory.push({ name, quantity, price });
 
-            // Limpiar el formulario y actualizar la vista
             form.reset();
             renderTable();
         });
 
-        // Función para eliminar un producto
         window.deleteItem = function(index) {
-            inventory.splice(index, 1); // Quita 1 elemento en la posición 'index'
+            inventory.splice(index, 1); 
             renderTable();
         };
 
-        // Renderizado inicial
         renderTable();
     </script>
 
