@@ -29,6 +29,6 @@ jobs:
       # Paso 4: Ejecutar el despliegue usando los Secrets guardados en GitHub
       - name: Publicar sitio web en Surge
         # REEMPLAZA 'tu-dominio-personalizado.surge.sh' por el enlace real de tu app
-        run: surge ./ tu-dominio-personalizado.surge.sh --token ${{ secrets.SURGE_TOKEN }}
+        run: surge ./ sysinventory-yvasquez.surge.sh --token ${{ secrets.SURGE_TOKEN }}
         env:
           SURGE_LOGIN: ${{ secrets.SURGE_LOGIN }}
